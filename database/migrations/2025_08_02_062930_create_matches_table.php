@@ -19,9 +19,8 @@ return new class extends Migration
             $table->integer('home_score')->default(0);
             $table->integer('away_score')->default(0);
             $table->time('live_clock')->nullable();
-            $table->timestamp('live_clock_started_at')->nullable();
-            $table->enum('status', ['scheduled', 'live', 'finished'])->default('scheduled');
-            $table->enum('match_status', ['stop', 'ongoing'])->default('stop');
+            $table->timestamp('started_at')->nullable();
+            $table->enum('status', [0, 1, 99])->default(0);
             $table->timestamps();
         });
     }

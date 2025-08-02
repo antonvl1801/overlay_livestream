@@ -17,48 +17,44 @@ class FootballMatchController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'code' => 'required|unique:football_matches',
-            'home_team_id' => 'required|exists:teams,id',
-            'away_team_id' => 'required|exists:teams,id|different:home_team_id',
-            'start_time' => 'required|date',
-            'status' => 'required|in:scheduled,live,finished',
+            'home_team_id' => 'required',
+            'away_team_id' => 'required',
         ]);
 
-        FootballMatch::create($validated);
-        return redirect()->route('matches.index')->with('success', 'Match added.');
+        FootballMatch::create($request->only(['code', 'home_team_id', 'away_team_id', 'started_at']));
+
+        return redirect()->route('matches.index');
     }
 
-    public function update(Request $request, FootballMatch $match)
+    public function edit($id)
     {
-        $validated = $request->validate([
-            'home_team_id' => 'required|exists:teams,id',
-            'away_team_id' => 'required|exists:teams,id|different:home_team_id',
-            'start_time' => 'required|date',
-            'status' => 'required|in:scheduled,live,finished',
+        $editMatch = FootballMatch::findOrFail($id);
+        $matches = FootballMatch::with(['homeTeam', 'awayTeam'])->get();
+        $teams = Team::all();
+
+        return view('matches.index', compact('editMatch', 'matches', 'teams'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $match = FootballMatch::findOrFail($id);
+
+        $request->validate([
+            'code' => 'required|unique:football_matches,code,' . $id,
+            'home_team_id' => 'required',
+            'away_team_id' => 'required',
         ]);
 
-        $match->update($validated);
-        return redirect()->route('matches.index')->with('success', 'Match updated.');
+        $match->update($request->only(['code', 'home_team_id', 'away_team_id', 'started_at']));
+
+        return redirect()->route('matches.index');
     }
 
     public function destroy($id)
     {
-        $match = FootballMatch::findOrFail($id);
-        $match->delete();
-        return response()->json(['success' => true]);
-    }
-
-    public function updateScore(Request $request, $id)
-    {
-        $match = FootballMatch::findOrFail($id);
-        if ($request->team === 'home') {
-            $match->home_score = (int)$request->score;
-        } else {
-            $match->away_score = (int)$request->score;
-        }
-        $match->save();
-
-        return response()->json(['success' => true]);
+        FootballMatch::findOrFail($id)->delete();
+        return redirect()->route('matches.index');
     }
 }

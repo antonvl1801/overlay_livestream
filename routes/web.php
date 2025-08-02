@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\FootballMatchController;
+use App\Http\Controllers\GoalController;
+use App\Http\Controllers\LiveMatchController;
 use App\Http\Controllers\ScoreboardController;
 use App\Http\Controllers\TeamController;
 use Illuminate\Support\Facades\Route;
@@ -25,15 +27,19 @@ Route::post('/teams', [TeamController::class, 'store'])->name('teams.store');
 Route::put('/teams/{team}', [TeamController::class, 'update'])->name('teams.update');
 Route::delete('/teams/{id}', [TeamController::class, 'destroy'])->name('teams.destroy');
 
-Route::get('/matches', [FootballMatchController::class, 'index'])->name('matches.index');
-Route::post('/matches', [FootballMatchController::class, 'store'])->name('matches.store');
-Route::post('/matches/{match}/update', [FootballMatchController::class, 'update'])->name('matches.update');
-Route::delete('/matches/{id}', [FootballMatchController::class, 'destroy']);
-Route::post('/matches/{id}/update-score', [FootballMatchController::class, 'updateScore']);
+Route::resource('matches', FootballMatchController::class)->except(['show']);
 
 Route::get('/scoreboard/{code}', [ScoreboardController::class, 'show'])->name('scoreboard.show');
 Route::get('/api/scoreboard/{code}', [ScoreboardController::class, 'apiData'])->name('scoreboard.apiData');
 
 
-Route::get('/{matchCode}/{stadium}/{tournament}/{broadcaster}/{status}/{teamA}/{teamB}/{colorA}/{colorB}/{timeParam}/{scoreA}/{scoreB}', [ScoreboardController::class, 'link'])
+Route::get('/{matchCode}/{stadium}/{tournament}/{broadcaster}/{status}/{teamA}/{teamB}/{colorA}/{colorB}/{timeParam}/{scoreA}/{scoreB}/{urlValueFlag}', [ScoreboardController::class, 'link'])
     ->name('scoreboard.link');
+
+Route::get('/live/{code}', [LiveMatchController::class, 'show'])->name('live.match');
+Route::post('/live/{code}/goal', [LiveMatchController::class, 'storeGoal'])->name('live.match.goal');
+Route::post('/live/{code}/status', [LiveMatchController::class, 'updateStatus'])->name('live.match.status');
+
+Route::delete('/goals/{goal}', [GoalController::class, 'destroy'])->name('goals.destroy');
+
+

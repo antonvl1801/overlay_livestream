@@ -13,8 +13,8 @@
         <x-scoreboard-ongoing :teamA="$teamA" :teamB="$teamB" :scoreA="$scoreA" :scoreB="$scoreB" :seconds="$seconds"
             :colorA="$colorA" :colorB="$colorB" />
     @else
-        <x-scoreboard-stop :teamA="$teamA" :teamB="$teamB" :scoreA="$scoreA" :scoreB="$scoreB" :colorA="$colorA" :status="$status"
-            :colorB="$colorB" />
+        <x-scoreboard-stop :teamA="$teamA" :teamB="$teamB" :scoreA="$scoreA" :scoreB="$scoreB" :colorA="$colorA"
+            :status="$status" :colorB="$colorB" :goals="$goals" />
     @endif
 </body>
 
