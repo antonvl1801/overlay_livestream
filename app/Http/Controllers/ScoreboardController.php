@@ -6,13 +6,10 @@ use App\Enums\MatchStatus;
 use App\Models\FootballMatch;
 use App\Models\Team;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
-
-use function Symfony\Component\VarDumper\Dumper\esc;
 
 class ScoreboardController extends Controller
 {
-    public function link($matchCode, $stadium, $tournament, $broadcaster, $status, $teamA, $teamB, $colorA, $colorB, $timeParam, $scoreA, $scoreB, $urlValueFlag)
+    public function link($matchCode, $status, $teamA, $teamB, $colorA, $colorB, $timeParam, $scoreA, $scoreB, $urlValueFlag)
     {
         if ($status == MatchStatus::SCHEDULED->value) {
             $teamA = Team::where('code', $teamA)->first() ?? $teamA;
@@ -23,7 +20,7 @@ class ScoreboardController extends Controller
             $prefix = substr($timeParam, 0, 1);
             $value = (int) substr($timeParam, 1);
             $seconds = $prefix === 's' ? $value : $value * 60;
-            if ($urlValueFlag !== 1) {
+            if ($urlValueFlag != 1) {
                 $match = FootballMatch::where('code', $matchCode)
                     ->first();
                 if ($match) {
@@ -31,7 +28,7 @@ class ScoreboardController extends Controller
                     $teamB = $match->awayTeam;
                     $scoreA = $match->home_score;
                     $scoreB = $match->away_score;
-                    $seconds = \Carbon\Carbon::parse($match->started_at)->diffInSeconds(\Carbon\Carbon::now());
+                    $seconds = max(0, \Carbon\Carbon::parse($match->started_at)->diffInSeconds(\Carbon\Carbon::now(), false));
                 }
             }
         }
@@ -82,9 +79,6 @@ class ScoreboardController extends Controller
 
         return view('scoreboard.link', compact(
             'matchCode',
-            'stadium',
-            'tournament',
-            'broadcaster',
             'status',
             'teamA',
             'teamB',

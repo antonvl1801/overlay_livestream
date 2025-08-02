@@ -2,11 +2,6 @@
     use App\Enums\MatchStatus;
 @endphp
 
-<div class="fixed inset-0 z-0">
-    <img src="{{ asset('img/background.webp') }}" class="w-full h-full object-cover" alt="Background" />
-</div>
-
-
 <!-- Overlay content -->
 <div class="fixed inset-0 flex items-center justify-center z-10 text-white text-sm font-sans">
     <div class="bg-primary fill-white drop-shadow-xl/50 py-6 px-8 flex flex-col items-center justify-center">

@@ -33,7 +33,7 @@ Route::get('/scoreboard/{code}', [ScoreboardController::class, 'show'])->name('s
 Route::get('/api/scoreboard/{code}', [ScoreboardController::class, 'apiData'])->name('scoreboard.apiData');
 
 
-Route::get('/{matchCode}/{stadium}/{tournament}/{broadcaster}/{status}/{teamA}/{teamB}/{colorA}/{colorB}/{timeParam}/{scoreA}/{scoreB}/{urlValueFlag}', [ScoreboardController::class, 'link'])
+Route::get('/{matchCode}/{status}/{teamA}/{teamB}/{colorA}/{colorB}/{timeParam}/{scoreA}/{scoreB}/{urlValueFlag}', [ScoreboardController::class, 'link'])
     ->name('scoreboard.link');
 
 Route::get('/live/{code}', [LiveMatchController::class, 'show'])->name('live.match');

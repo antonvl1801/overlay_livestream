@@ -2,9 +2,12 @@
     <img src="{{ asset('img/logo.png') }}" class="w-10 h-10 mr-2 object-cover" alt="Background" />
     <div>CUP BỔN MẠNG <br>CỘNG ĐOÀN KASAI</div>
 </div>
+<div class="hidden">
+    bg-red-500 bg-blue-500 bg-green-500 bg-violet-500 bg-black bg-white bg-orange-500 bg-gray-500
+</div>
 <div class="fixed top-4 right-4 z-50 bg-amber">
     <div class="flex items-center rounded text-white shadow text-sm font-sans h-8">
-        <div class="bg-{{ $colorA ?? 'green' }}-500 h-full w-1"></div>
+        <div class="{{ $colorA }} h-full w-1"></div>
         <div class="flex flex-col justify-center bg-primary h-full items-center w-32">
             {{ $teamA->name ?? $teamA }}
         </div>
@@ -20,7 +23,7 @@
         <div class="flex flex-col justify-center items-center bg-primary h-full w-32">
             {{ $teamB->name ?? $teamB }}
         </div>
-        <div class="bg-{{ $colorB ?? 'violet' }}-500 h-full w-1"></div>
+        <div class="{{ $colorB }} h-full w-1"></div>
     </div>
     <div class="w-full flex items-center justify-center text-primary text-sm font-bold">
         <div id="timer" class="h-8 w-16 bg-amber-300 flex items-center justify-center">
