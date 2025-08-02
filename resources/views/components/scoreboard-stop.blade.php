@@ -33,12 +33,12 @@
                 <img src="{{ isset($teamB->logo_path) ? asset('storage/' . $teamB->logo_path) : asset('img/logo.png') }}"
                     class="h-24 w-24 mb-2 animate-flipY" alt="Logo" />
                 <span
-                    class="text-lg text-base font-semibold text-white mb-1">{{ isset($teamB->name) ? $teamB->name : $teamA }}</span>
+                    class="text-lg text-base font-semibold text-white mb-1">{{ isset($teamB->name) ? $teamB->name : $teamB }}</span>
             </div>
         </div>
         <div class="flex justify-between items-center">
             <div class="flex flex-col text-center mr-20">
-                @if ($status == MatchStatus::FINISHED->value)
+                @if ($status == MatchStatus::FINISHED->value && isset($goals['home']))
                     @foreach ($goals['home'] as $goal)
                         <div class="text-xs text-white w-40">
                             {{ $goal['minute'] }}' - {{ $goal['scorer_name'] }}
@@ -49,7 +49,7 @@
 
             </div>
             <div class="flex flex-col text-center">
-                @if ($status == MatchStatus::FINISHED->value)
+                @if ($status == MatchStatus::FINISHED->value && isset($goals['away']))
                     @foreach ($goals['away'] as $goal)
                         <div class="text-xs text-white w-40">
                             {{ $goal['minute'] }}' - {{ $goal['scorer_name'] }}
