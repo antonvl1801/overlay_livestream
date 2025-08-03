@@ -33,13 +33,14 @@ Route::get('/scoreboard/{code}', [ScoreboardController::class, 'show'])->name('s
 Route::get('/api/scoreboard/{code}', [ScoreboardController::class, 'apiData'])->name('scoreboard.apiData');
 
 
-Route::get('/{matchCode}/{status}/{teamA}/{teamB}/{colorA}/{colorB}/{timeParam}/{scoreA}/{scoreB}/{urlValueFlag}', [ScoreboardController::class, 'link'])
+Route::get('/{matchCode}/{status}/{codeA}/{codeB}/{nameA}/{nameB}/{colorA}/{colorB}/{timeParam}/{scoreA}/{scoreB}/{urlValueFlag}', [ScoreboardController::class, 'link'])
     ->name('scoreboard.link');
 
 Route::get('/live/{code}', [LiveMatchController::class, 'show'])->name('live.match');
 Route::post('/live/{code}/goal', [LiveMatchController::class, 'storeGoal'])->name('live.match.goal');
 Route::post('/live/{code}/status', [LiveMatchController::class, 'updateStatus'])->name('live.match.status');
-
+Route::put('/matches/{match}/status', [LiveMatchController::class, 'updateStatus'])->name('matches.updateStatus');
+Route::get('/standings', [ScoreboardController::class, 'standings'])->name('standings');
 Route::delete('/goals/{goal}', [GoalController::class, 'destroy'])->name('goals.destroy');
 
 

@@ -19,9 +19,27 @@
         <h1 class="text-3xl font-bold mb-4">
             {{ $match->homeTeam->name }} vs {{ $match->awayTeam->name }}
         </h1>
-        <p class="text-xl mb-2">
-            Score: <span class="font-semibold">{{ $match->home_score }} - {{ $match->away_score }}</span>
-        </p>
+        <div class="flex">
+            <p class="text-xl mb-2">
+                Score: <span class="font-semibold">{{ $match->home_score }} - {{ $match->away_score }}</span>
+            </p>
+            <div class="ml-6">
+                <form method="POST" action="{{ route('matches.updateStatus', $match->code) }}">
+                    @csrf
+                    @method('PUT')
+                    <label for="status" class="mr-2 text-sm font-semibold">Match Status:</label>
+                    <select name="status" id="status" class="border px-2 py-1 rounded"
+                        onchange="this.form.submit()">
+                        @foreach (\App\Enums\MatchStatus::cases() as $statusEnum)
+                            <option value="{{ $statusEnum->value }}"
+                                {{ $match->status == $statusEnum->value ? 'selected' : '' }}>
+                                {{ $statusEnum->label() }}
+                            </option>
+                        @endforeach
+                    </select>
+                </form>
+            </div>
+        </div>
 
         <hr class="my-6">
 

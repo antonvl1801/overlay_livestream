@@ -9,17 +9,19 @@ use Carbon\Carbon;
 
 class ScoreboardController extends Controller
 {
-    public function link($matchCode, $status, $teamA, $teamB, $colorA, $colorB, $timeParam, $scoreA, $scoreB, $urlValueFlag)
+    public function link($matchCode, $status, $codeA, $codeB, $nameA, $nameB, $colorA, $colorB, $timeParam, $scoreA, $scoreB, $urlValueFlag)
     {
         if ($status == MatchStatus::SCHEDULED->value) {
-            $teamA = Team::where('code', $teamA)->first() ?? $teamA;
-            $teamB = Team::where('code', $teamB)->first() ?? $teamB;
+            $teamA = Team::where('code', $codeA)->first() ?? $nameA;
+            $teamB = Team::where('code', $codeB)->first() ?? $nameB;
         }
 
         if ($status == MatchStatus::LIVE->value) {
             $prefix = substr($timeParam, 0, 1);
             $value = (int) substr($timeParam, 1);
             $seconds = $prefix === 's' ? $value : $value * 60;
+            $teamA = $nameA;
+            $teamB = $nameB;
             if ($urlValueFlag != 1) {
                 $match = FootballMatch::where('code', $matchCode)
                     ->first();
@@ -31,6 +33,7 @@ class ScoreboardController extends Controller
                     $seconds = max(0, \Carbon\Carbon::parse($match->started_at)->diffInSeconds(\Carbon\Carbon::now(), false));
                 }
             }
+
         }
 
         if ($status == MatchStatus::FINISHED->value) {
@@ -68,8 +71,8 @@ class ScoreboardController extends Controller
                 $goals['home'] = $homeGoals;
                 $goals['away'] = $awayGoals;
             } else {
-                $teamA = Team::where('code', $teamA)->first() ?? $teamA;
-                $teamB = Team::where('code', $teamB)->first() ?? $teamB;
+                $teamA = Team::where('code', $codeA)->first() ?? $nameA;
+                $teamB = Team::where('code', $codeB)->first() ?? $nameB;
                 $goals = [];
             }
         }
@@ -116,5 +119,65 @@ class ScoreboardController extends Controller
             'start_time' => $match->start_time->toDateTimeString(),
             'status' => $match->status,
         ]);
+    }
+
+    public function standings()
+    {
+        $teams = Team::with(['homeMatches' => function ($query) {
+            $query->where('status', MatchStatus::FINISHED->value);
+        }, 'awayMatches' => function ($query) {
+            $query->where('status', MatchStatus::FINISHED->value);
+        }])->get();
+
+        $standings = $teams->map(function ($team) {
+            $played = 0;
+            $points = 0;
+            $goalsFor = 0;
+            $goalsAgainst = 0;
+
+            // Tính cho các trận sân nhà
+            foreach ($team->homeMatches as $match) {
+                if ($match->home_score !== null && $match->away_score !== null) {
+                    $played++;
+                    $goalsFor += $match->home_score;
+                    $goalsAgainst += $match->away_score;
+
+                    if ($match->home_score > $match->away_score) {
+                        $points += 3;
+                    } elseif ($match->home_score == $match->away_score) {
+                        $points += 1;
+                    }
+                }
+            }
+
+            // Tính cho các trận sân khách
+            foreach ($team->awayMatches as $match) {
+                if ($match->home_score !== null && $match->away_score !== null) {
+                    $played++;
+                    $goalsFor += $match->away_score;
+                    $goalsAgainst += $match->home_score;
+
+                    if ($match->away_score > $match->home_score) {
+                        $points += 3;
+                    } elseif ($match->away_score == $match->home_score) {
+                        $points += 1;
+                    }
+                }
+            }
+
+            return [
+                'team_name' => $team->name,
+                'logo' => $team->logo_path,
+                'points' => $points,
+                'goal_difference' => $goalsFor - $goalsAgainst,
+            ];
+        });
+
+        // Sắp xếp theo số điểm rồi đến hiệu số
+        $sortedStandings = $standings->sortByDesc('points')
+            ->sortByDesc('goal_difference')
+            ->values();
+
+        return view('standings.index', compact('sortedStandings'));
     }
 }

@@ -46,8 +46,7 @@ class LiveMatchController extends Controller
     {
         $match = FootballMatch::where('code', $code)->firstOrFail();
         $match->update([
-            'status' => $request->status,
-            'match_status' => $request->match_status,
+            'status' => (int) $request->status,
         ]);
 
         // Broadcast Pusher event ở đây nếu cần
